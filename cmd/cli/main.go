@@ -62,8 +62,7 @@ func queryMode(l *log.Logger, proto, address, key string, timeout time.Duration)
 func query(proto, address, key string, timeout time.Duration) error {
 	options := make([]svrquery.Option, 0)
 	if key != "" {
-		options = append(options, svrquery.WithKey(key))
-		options = append(options, svrquery.WithTimeout(timeout))
+		options = append(options, svrquery.WithKey(key), svrquery.WithTimeout(timeout))
 	}
 
 	c, err := svrquery.NewClient(proto, address, options...)

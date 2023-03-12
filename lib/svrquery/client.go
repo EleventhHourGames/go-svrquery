@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/libp2p/go-reuseport"
-
 	"github.com/multiplay/go-svrquery/lib/svrquery/protocol"
+
 	// Register all known protocols
 	_ "github.com/multiplay/go-svrquery/lib/svrquery/protocol/all"
 )
@@ -71,9 +71,12 @@ func NewClient(proto, addr string, options ...Option) (*Client, error) {
 		}
 	}
 
+	if c.ua, err = net.ResolveUDPAddr(c.network, addr); err != nil {
+		return nil, err
+	}
+
 	d := net.Dialer{
 		Control: reuseport.Control,
-		Timeout: c.timeout,
 	}
 
 	conn, err := d.Dial(c.network, addr)
