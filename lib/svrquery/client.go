@@ -73,6 +73,7 @@ func NewClient(proto, addr string, options ...Option) (*Client, error) {
 
 	d := net.Dialer{
 		Control: reuseport.Control,
+		Timeout: c.timeout,
 	}
 
 	conn, err := d.Dial(c.network, addr)

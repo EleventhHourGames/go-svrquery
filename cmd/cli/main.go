@@ -20,6 +20,7 @@ func main() {
 	key := flag.String("key", "", "Key to use to authenticate")
 	file := flag.String("file", "", "Bulk file to execute to get basic server information")
 	serverAddr := flag.String("server", "", "Address to start server e.g. 127.0.0.1:12121, :23232")
+	timeout := flag.Duration("timeout", time.Second*1, "Timeout duration e.g., '1s'")
 	flag.Parse()
 
 	l := log.New(os.Stderr, "", 0)
@@ -46,22 +47,23 @@ func main() {
 		if *proto == "" {
 			bail(l, "Protocol required in server mode")
 		}
-		queryMode(l, *proto, *clientAddr, *key)
+		queryMode(l, *proto, *clientAddr, *key, *timeout)
 	default:
 		bail(l, "Please supply some options")
 	}
 }
 
-func queryMode(l *log.Logger, proto, address, key string) {
-	if err := query(proto, address, key); err != nil {
+func queryMode(l *log.Logger, proto, address, key string, timeout time.Duration) {
+	if err := query(proto, address, key, timeout); err != nil {
 		l.Fatal(err)
 	}
 }
 
-func query(proto, address, key string) error {
+func query(proto, address, key string, timeout time.Duration) error {
 	options := make([]svrquery.Option, 0)
 	if key != "" {
 		options = append(options, svrquery.WithKey(key))
+		options = append(options, svrquery.WithTimeout(timeout))
 	}
 
 	c, err := svrquery.NewClient(proto, address, options...)
